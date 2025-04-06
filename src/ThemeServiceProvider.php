@@ -1,8 +1,7 @@
 <?php
 
-namespace YAAP\Theme;
+namespace FelixFrey\LaravelTheme;
 
-use Illuminate\Console\Application;
 use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 

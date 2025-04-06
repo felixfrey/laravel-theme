@@ -1,5 +1,5 @@
 {
-    "name": "yaap/theme",
+    "name": "felixfrey/laravel-theme",
     "description": "Theme support for Laravel with assets, theme extends etc.",
     "license": "MIT",
     "keywords": [
@@ -8,15 +8,22 @@
         "layout",
         "asset"
     ],
+    "homepage": "https://github.com/felixfrey/laravel-theme",
     "authors": [
         {
-            "name": "Biluk Andrey",
-            "email": "yaapis@gmail.com"
+            "name": "Felix Frey",
+            "email": "mail@felixfrey.at"
         }
     ],
     "require": {
         "php": "^8.1",
-        "laravel/framework": "^10.0 | ^11.0"
+        "illuminate/console": "^10.0|^11.0|^12.0",
+        "illuminate/config": "^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0",
+        "illuminate/container": "^10.0|^11.0|^12.0",
+        "illuminate/filesystem": "^10.0|^11.0|^12.0",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/view": "^10.0|^11.0|^12.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.38"
@@ -25,16 +32,16 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "YAAP\\Theme\\": "src/"
+            "FelixFrey\\LaravelTheme\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "aliases": {
-                "ThemeLoader": "YAAP\\Theme\\Facades\\ThemeLoader"
+                "ThemeLoader": "FelixFrey\\LaravelTheme\\Facades\\ThemeLoader"
             },
             "providers": [
-                "YAAP\\Theme\\ThemeServiceProvider"
+                "FelixFrey\\LaravelTheme\\ThemeServiceProvider"
             ]
         }
     },

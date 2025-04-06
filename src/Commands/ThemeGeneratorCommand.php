@@ -1,6 +1,6 @@
 <?php
 
-namespace YAAP\Theme\Commands;
+namespace FelixFrey\LaravelTheme\Commands;
 
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Symfony\Component\Console\Input\InputArgument;

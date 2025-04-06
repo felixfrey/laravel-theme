@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace YAAP\Theme;
+namespace FelixFrey\LaravelTheme;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;

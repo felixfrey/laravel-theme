@@ -1,11 +1,11 @@
 <?php
 
-namespace YAAP\Theme;
+namespace FelixFrey\LaravelTheme;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Translation\Loader;
 use Illuminate\View\ViewFinderInterface;
-use YAAP\Theme\Exceptions\ThemeException;
+use FelixFrey\LaravelTheme\Exceptions\ThemeException;
 
 class ThemeLoader
 {

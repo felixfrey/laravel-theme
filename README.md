@@ -1,6 +1,7 @@
 # Theme support for Laravel
 
 Inspired by [bigecko/laravel-theme](https://github.com/harryxu/laravel-theme).
+Fork of [yaap/theme](https://github.com/yaapis/Theme).
 Themes are stored inside default laravel's resources folder
 
 ## Introduction
@@ -11,24 +12,25 @@ For example, you can develop **multiple** themes for your application and easily
 
 ## Requirements
 
-This version requires [PHP](https://www.php.net/) 8.1 and supports [Laravel](https://laravel.com/) 10-11.
+This version requires [PHP](https://www.php.net/) 8.1 and supports [Laravel](https://laravel.com/) 10 - 12.
 
 This package also provides support for [Laravel Mix](https://laravel-mix.com/) and [Vite](https://vitejs.dev/) configurations.
 
-| Themes | L5.5               | L5.6               | L5.7               | L5.8               | L6                 | L7  | L8                 | L9                 | L10                | L11                |
-|--------|--------------------|--------------------|--------------------|--------------------|--------------------|-----|--------------------|--------------------|--------------------|--------------------|
-| 2.4    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:                | :x: | :x:                | :x:                | :x:                | :x:                |
-| 3.0    | :x:                | :x:                | :x:                | :x:                | :white_check_mark: | :x: | :x:                | :x:                | :x:                | :x:                |
-| 4.1    | :x:                | :x:                | :x:                | :x:                | :x:                | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:                |
-| 5.0    | :x:                | :x:                | :x:                | :x:                | :x:                | :x: | :x:                | :x:                | :white_check_mark: | :x:                |
-| 5.1    | :x:                | :x:                | :x:                | :x:                | :x:                | :x: | :x:                | :x:                | :white_check_mark: | :white_check_mark: |
+| Themes | Laravel 5.5        | Laravel 5.6        | Laravel 5.7        | Laravel 5.8        | Laravel 6          | Laravel 7          | Laravel 8          | Laravel 9          | Laravel 10         | Laravel 11         | Laravel 12        |
+|--------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
+| 2.4    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                |
+| 3.0    | :x:                | :x:                | :x:                | :x:                | :white_check_mark: | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                |
+| 4.1    | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:                | :x:                |
+| 5.0    | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :white_check_mark: | :x:                | :x:                |
+| 5.1    | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :white_check_mark: | :white_check_mark: | :x:                |
+| 5.2    | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :x:                | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 ## Installation
 
 To get the latest version, simply require the project using [Composer](https://getcomposer.org/):
 
 ```bash
-composer require "yaap/theme:^5.0"
+composer require "felixfrey/laravel-theme:^1.0.0"
 ```
 
 or manually add line to `composer.json`
@@ -36,7 +38,7 @@ or manually add line to `composer.json`
 ```json
 {
     "require": {
-        "yaap/theme": "^5.0"
+        "felixfrey/laravel-theme": "^1.0.0"
     }
 }
 ```
@@ -44,7 +46,7 @@ or manually add line to `composer.json`
 Optionally, publish config using artisan CLI (if you want to overwrite default config).
 
 ```bash
-php artisan vendor:publish --provider="YAAP\Theme\ThemeServiceProvider"
+php artisan vendor:publish --provider="FelixFrey\LaravelTheme\ThemeServiceProvider"
 ```
 
 ## Configuration
@@ -199,7 +201,7 @@ project-root
 To init and use theme in your application, add the following code to any `boot` method in application service provider (e.g. `AppServiceProvider`):
 
 ```php
-use YAAP\Theme\Facades\ThemeLoader;
+use FelixFrey\LaravelTheme\Facades\ThemeLoader;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -220,7 +222,7 @@ Lang files will be added as well:
 
 ### Making view
 
-> [Laravel: Creating & Rendering Views](https://laravel.com/docs/10.x/views#creating-and-rendering-views)
+> [Laravel: Creating & Rendering Views](https://laravel.com/docs/12.x/views#creating-and-rendering-views)
 
 ```php
 View::make('hello');
@@ -325,11 +327,11 @@ To use images, you can use the following code:
 
 #### Layouts using Components
 
-> [Laravel: Blade Components](https://laravel.com/docs/10.x/blade#components)
+> [Laravel: Blade Components](https://laravel.com/docs/12.x/blade#components)
 
 #### Layouts using template inheritance
 
-To build layouts we use [template inheritance](https://laravel.com/docs/10.x/blade#layouts-using-template-inheritance).
+To build layouts we use [template inheritance](https://laravel.com/docs/12.x/blade#layouts-using-template-inheritance).
 You can use `@extends` directive to specify a parent layout.
 
 ```blade
@@ -350,17 +352,7 @@ You can use `@extends` directive to specify a parent layout.
 
 You still able to use default `View::make('emails.notify')` which is stored outside the `themes` directory.
 
-## Can I hire you guys?
-
-Yes! Say hi: [hello@hexide-digital.com](mailto:hello@hexide-digital.com)
-
-We will be happy to work with you! Other [work we’ve done](https://hexide-digital.com/)
-
-### Follow us
-
-Stay up to date with the latest news! Follow us on [LinkedIn](https://www.linkedin.com/company/hexide-digital)
-or [Facebook](https://www.facebook.com/hexide.digital)
 
 ## License
 
-[MIT](https://github.com/yaapis/Theme/blob/master/LICENSE) license.
+[MIT](https://github.com/felixfrey/laravel-theme/blob/master/LICENCE.md) license.

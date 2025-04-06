@@ -1,12 +1,12 @@
 <?php
 
-namespace YAAP\Theme\Commands;
+namespace FelixFrey\LaravelTheme\Commands;
 
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use YAAP\Theme\Facades\ThemeLoader;
-use YAAP\Theme\ThemeInfo;
+use FelixFrey\LaravelTheme\Facades\ThemeLoader;
+use FelixFrey\LaravelTheme\ThemeInfo;
 
 /**
  * Class BaseThemeCommand.

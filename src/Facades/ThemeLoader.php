@@ -1,13 +1,13 @@
 <?php
 
-namespace YAAP\Theme\Facades;
+namespace FelixFrey\LaravelTheme\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @mixin \YAAP\Theme\ThemeLoader
+ * @mixin \FelixFrey\LaravelTheme\ThemeLoader
  *
- * @see \YAAP\Theme\ThemeLoader
+ * @see \FelixFrey\LaravelTheme\ThemeLoader
  */
 class ThemeLoader extends Facade
 {

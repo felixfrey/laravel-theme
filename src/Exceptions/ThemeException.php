@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace YAAP\Theme\Exceptions;
+namespace FelixFrey\LaravelTheme\Exceptions;
 
 use Exception;
 
