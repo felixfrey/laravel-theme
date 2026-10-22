@@ -64,7 +64,17 @@ class ThemeLoader
 
         $currentTheme = $baseTheme;
 
+        $loadedThemeNames = [];
+
         while (true) {
+            if (in_array($currentTheme->getName(), $loadedThemeNames, true)) {
+                $inheritanceChain = implode(' -> ', [...$loadedThemeNames, $currentTheme->getName()]);
+
+                throw new ThemeException("Circular theme inheritance: {$inheritanceChain}.");
+            }
+
+            $loadedThemeNames[] = $currentTheme->getName();
+
             if (!is_dir($currentTheme->getRootDirectoryPath())) {
                 throw new ThemeException("Theme folder {$currentTheme->getName()} not found.");
             }
