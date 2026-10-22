@@ -3,6 +3,7 @@
 namespace FelixFrey\LaravelTheme\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class ThemeDestroyCommand.
@@ -36,7 +37,10 @@ class ThemeDestroyCommand extends BaseThemeCommand
             return self::FAILURE;
         }
 
-        if (!$this->confirm('Are you sure you want to permanently delete?')) {
+        $deletionConfirmed = $this->option('force')
+            || $this->confirm('Are you sure you want to permanently delete?');
+
+        if (!$deletionConfirmed) {
             $this->error("Deletion of Theme \"{$this->getTheme()->getName()}\" has been canceled.");
 
             return self::FAILURE;
@@ -58,6 +62,13 @@ class ThemeDestroyCommand extends BaseThemeCommand
     {
         return [
             new InputArgument('name', InputArgument::REQUIRED, 'Name of the theme to destroy'),
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            new InputOption('force', null, InputOption::VALUE_NONE, 'Delete the theme without asking for confirmation'),
         ];
     }
 }
