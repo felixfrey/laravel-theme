@@ -5,6 +5,7 @@ namespace FelixFrey\LaravelTheme\Tests;
 use FelixFrey\LaravelTheme\Exceptions\ThemeException;
 use FelixFrey\LaravelTheme\Facades\ThemeLoader;
 use FelixFrey\LaravelTheme\ThemeInfo;
+use Illuminate\Support\Facades\File;
 
 class ThemeLoaderTest extends TestCase
 {
@@ -49,6 +50,39 @@ class ThemeLoaderTest extends TestCase
         ThemeLoader::init('');
     }
 
+    public function testInitRejectsANameOutsideTheThemesPath(): void
+    {
+        $this->expectException(ThemeException::class);
+        $this->expectExceptionMessage('Theme name ../themes/default is not a folder inside the themes path.');
+
+        ThemeLoader::init('../themes/default');
+    }
+
+    public function testInitRejectsAParentThemeOutsideTheThemesPath(): void
+    {
+        $themesPath = "{$this->useTemporaryBasePath()}/themes";
+
+        File::ensureDirectoryExists("{$themesPath}/escape");
+        File::put("{$themesPath}/escape/config.php", "<?php return ['inherit' => '../outside'];");
+
+        $this->expectException(ThemeException::class);
+        $this->expectExceptionMessage('Theme name ../outside is not a folder inside the themes path.');
+
+        ThemeLoader::init('escape');
+    }
+
+    public function testInitAcceptsZeroAsAThemeName(): void
+    {
+        $themesPath = "{$this->useTemporaryBasePath()}/themes";
+
+        File::ensureDirectoryExists("{$themesPath}/0/views");
+        File::put("{$themesPath}/0/views/hello.blade.php", 'Hello from zero');
+
+        ThemeLoader::init('0');
+
+        $this->assertSame('Hello from zero', trim(view('hello')->render()));
+    }
+
     public function testInitThrowsForAMissingTheme(): void
     {
         $this->expectException(ThemeException::class);
@@ -67,6 +101,22 @@ class ThemeLoaderTest extends TestCase
         sort($themeNames);
 
         $this->assertSame(['child', 'default'], $themeNames);
+    }
+
+    public function testGetListIgnoresTheParentDirectoryEntry(): void
+    {
+        $basePath = $this->useTemporaryBasePath();
+
+        File::ensureDirectoryExists("{$basePath}/themes/default");
+        File::put("{$basePath}/themes/default/config.php", '<?php return [];');
+        File::put("{$basePath}/config.php", '<?php return [];');
+
+        $themeNames = array_map(
+            fn (ThemeInfo $theme) => $theme->getName(),
+            ThemeLoader::getList(),
+        );
+
+        $this->assertSame(['default'], $themeNames);
     }
 
     public function testGetListIsEmptyWhenTheThemesPathDoesNotExist(): void

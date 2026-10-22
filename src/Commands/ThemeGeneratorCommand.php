@@ -36,7 +36,7 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
      */
     public function handle(): int
     {
-        $message = $this->validateName($this->argument('name'));
+        $message = $this->validateValue($this->argument('name'));
         if ($message) {
             $this->error($message);
 
@@ -253,6 +253,22 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
         return "{$templatesPath}/{$templateName}";
     }
 
+    private function validateValue($value): ?string
+    {
+        return match (true) {
+            blank($value) => 'Name is required.',
+
+            !empty(
+                preg_match(
+                    '/[^a-zA-Z0-9\-_\s]/',
+                    $value,
+                )
+            ) => 'Name must be alphanumeric, dash, space or underscore.',
+
+            default => null,
+        };
+    }
+
     private function validateThemeDoesNotExist(string $value): ?string
     {
         if ($this->option('force')) {
@@ -284,7 +300,7 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
             'name' => fn () => text(
                 label: 'What is a name of the new theme?',
                 default: 'default',
-                validate: fn ($value) => $this->validateName($value) ?? $this->validateThemeDoesNotExist($value)
+                validate: fn ($value) => $this->validateValue($value) ?? $this->validateThemeDoesNotExist($value)
             ),
         ];
     }
