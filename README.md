@@ -1,7 +1,7 @@
 # Theme support for Laravel
 
-Inspired by [bigecko/laravel-theme](https://github.com/harryxu/laravel-theme).
-Fork of [yaap/theme](https://github.com/yaapis/Theme).
+This package is a fork of [yaap/theme](https://github.com/yaapis/Theme), which in turn was inspired by [bigecko/laravel-theme](https://github.com/harryxu/laravel-theme), a theme manager for Laravel 4.
+
 Themes are stored in the `themes` folder of your project by default (see `path` in the package config).
 
 ## Introduction
