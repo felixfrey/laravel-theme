@@ -12,6 +12,7 @@ class ThemeLoaderTest extends TestCase
     protected function defineEnvironment($app): void
     {
         $app['config']->set('theme.path', $this->fixturesPath('themes'));
+        $app['config']->set('view.paths', [$this->fixturesPath('views')]);
     }
 
     public function testInitMakesThemeViewsAvailable(): void
@@ -33,6 +34,13 @@ class ThemeLoaderTest extends TestCase
         ThemeLoader::init('child');
 
         $this->assertSame('About from default', trim(view('about')->render()));
+    }
+
+    public function testInitKeepsAppViewsAheadOfThemeViews(): void
+    {
+        ThemeLoader::init('default');
+
+        $this->assertSame('Greeting from the app', trim(view('greeting')->render()));
     }
 
     public function testInitRegistersTranslationsUnderTheThemeNamespace(): void
