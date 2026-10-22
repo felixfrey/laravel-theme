@@ -1,8 +1,8 @@
 # Theme support for Laravel
 
-Inspired by [bigecko/laravel-theme](https://github.com/harryxu/laravel-theme).
-Fork of [yaap/theme](https://github.com/yaapis/Theme).
-Themes are stored inside default laravel's resources folder
+This package is a fork of [yaap/theme](https://github.com/yaapis/Theme), which in turn was inspired by [bigecko/laravel-theme](https://github.com/harryxu/laravel-theme), a theme manager for Laravel 4.
+
+Themes are stored in the `themes` folder of your project by default (see `path` in the package config).
 
 ## Introduction
 
@@ -139,12 +139,20 @@ The first time you have to create theme `default` structure, using the artisan c
 php artisan theme:create default
 ```
 
-By default, it will use `vite` as assets builder. If you want to use `laravel mix` instead, use the command:
-
-or with laravel mix:
+By default, it will use `vite` as assets builder. If you want to use `laravel mix` instead, pass `mix` as the second argument:
 
 ```bash
 php artisan theme:create default mix
+```
+
+The assets builder must be `vite` or `mix`.
+
+Theme names may contain letters, numbers, dashes, underscores and spaces. They are converted to snake case, so `My Theme` creates the folder `themes/my_theme`. If you run the command without a name, it asks for one.
+
+If the theme already exists, the command asks whether to overwrite it. The files the command generates are then written again, and other files in the theme folder stay as they are. To overwrite without the question, add `--force`:
+
+```bash
+php artisan theme:create default --force
 ```
 
 #### Destroy command
@@ -190,11 +198,12 @@ project-root
 |   |   |   ├── partials/
 |   |   |   └── hello.blade.php
 |   |   └── config.php
-|   ├── admin/
-|   ├── views/
-|       ├── emails/
-|       |   └── notify.blade.php
-|       └── hello.blade.php
+|   └── admin/
+|       ├── views/
+|       |   ├── emails/
+|       |   |   └── notify.blade.php
+|       |   └── hello.blade.php
+|       └── config.php
 ```
 
 ## Init theme
@@ -215,11 +224,37 @@ class AppServiceProvider extends ServiceProvider
 
 This will add to views find path:
 
+* `themes/{$name}` (for layouts such as `layouts.master`)
 * `themes/{$name}/views`
+
+Views in your application's own view paths, such as `resources/views`, take precedence over theme views with the same name.
 
 Lang files will be added as well:
 
 * `themes/{$name}/lang`
+
+They are registered under the theme name, so you use them with the theme name as namespace:
+
+```php
+__('default::labels.intro');
+```
+
+### Theme inheritance
+
+Set `inherit` in the `config.php` of a theme to the name of another theme. Views that are missing in the child theme are then loaded from the parent theme, and the parent theme can inherit from another theme in turn.
+
+Translations are not inherited. Only the `lang` folder of the theme passed to `init()` is registered.
+
+### Errors
+
+`ThemeLoader::init()` throws a `FelixFrey\LaravelTheme\Exceptions\ThemeException` when:
+
+* the theme name is empty
+* the folder of the theme or of a parent theme does not exist
+* the name of the theme or of a parent theme is not a single folder inside the themes path, for example `../shared` or `clients/acme`
+* the inheritance is circular, for example two themes that inherit from each other
+
+If `init()` throws, no view paths of the failed theme are registered.
 
 ### Making view
 
@@ -287,7 +322,7 @@ mix.browserSync({
     ]
 });
 
-// other configutraions...
+// other configurations...
 
 // mix for default theme
 mix.copyDirectory('themes/default/assets/img', 'public/themes/default/img');
