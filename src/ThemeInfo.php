@@ -26,6 +26,18 @@ class ThemeInfo
         return $this->name;
     }
 
+    /**
+     * Whether the name points to a single folder inside the themes path.
+     */
+    public function hasValidName(): bool
+    {
+        if (in_array($this->name, ['', '.', '..'], true)) {
+            return false;
+        }
+
+        return false === strpbrk($this->name, "/\\\0");
+    }
+
     public function getConfigs(): array
     {
         return $this->configs;

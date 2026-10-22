@@ -53,4 +53,38 @@ class ThemeDestroyCommandTest extends TestCase
 
         $this->assertDirectoryExists($this->themePath);
     }
+
+    public function testItRefusesAnEmptyNameInsteadOfDeletingAllThemes(): void
+    {
+        $this->artisan('theme:destroy', ['name' => ''])
+            ->expectsOutput('Name is required.')
+            ->assertFailed();
+
+        $this->assertDirectoryExists($this->themePath);
+        $this->assertDirectoryExists($this->assetsPath);
+    }
+
+    public function testItRefusesANameThatPointsOutsideTheThemesDirectory(): void
+    {
+        $this->artisan('theme:destroy', ['name' => '..'])
+            ->expectsOutput('Name must be a single folder inside the themes path.')
+            ->assertFailed();
+
+        $this->assertDirectoryExists($this->themePath);
+        $this->assertDirectoryExists($this->assetsPath);
+    }
+
+    public function testItDeletesAThemeWhoseFolderNameContainsADot(): void
+    {
+        $themePath = dirname($this->themePath) . '/v2.0';
+
+        File::ensureDirectoryExists("{$themePath}/views");
+
+        $this->artisan('theme:destroy', ['name' => 'v2.0'])
+            ->expectsConfirmation('Are you sure you want to permanently delete?', 'yes')
+            ->assertSuccessful();
+
+        $this->assertDirectoryDoesNotExist($themePath);
+        $this->assertDirectoryExists($this->themePath);
+    }
 }

@@ -53,14 +53,11 @@ class ThemeLoader
      */
     public function init(string $themeName): void
     {
-        if (empty($themeName)) {
+        if (blank($themeName)) {
             throw new ThemeException('Theme name should not be empty.');
         }
 
-        $baseTheme = new ThemeInfo(
-            $themeName,
-            $this->themesPath()
-        );
+        $baseTheme = $this->makeTheme($themeName);
 
         $currentTheme = $baseTheme;
 
@@ -91,10 +88,7 @@ class ThemeLoader
 
             // if theme has parent, add it to the list
             // and load on next loop iteration
-            $currentTheme = new ThemeInfo(
-                $inheritThemeName,
-                $this->themesPath()
-            );
+            $currentTheme = $this->makeTheme($inheritThemeName);
         }
 
         // Register lang files for base theme with namespace
@@ -119,6 +113,10 @@ class ThemeLoader
         $dir_list = dir($path);
         while (false !== ($entry = $dir_list->read())) {
             $themeInfo = new ThemeInfo($entry, $path);
+            if (!$themeInfo->hasValidName()) {
+                continue;
+            }
+
             if (!file_exists($themeInfo->getConfigPath())) {
                 continue;
             }
@@ -132,5 +130,19 @@ class ThemeLoader
     public function themesPath(): string
     {
         return rtrim($this->app['config']->get('theme.path', base_path('themes')), '/');
+    }
+
+    /**
+     * @throws ThemeException
+     */
+    private function makeTheme(string $name): ThemeInfo
+    {
+        $theme = new ThemeInfo($name, $this->themesPath());
+
+        if (!$theme->hasValidName()) {
+            throw new ThemeException("Theme name {$name} is not a folder inside the themes path.");
+        }
+
+        return $theme;
     }
 }

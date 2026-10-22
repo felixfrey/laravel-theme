@@ -40,4 +40,17 @@ class ThemeInfoTest extends TestCase
         $this->assertSame([], $theme->getConfigs());
         $this->assertNull($theme->getParentThemeName());
     }
+
+    public function testHasValidNameOnlyAcceptsASingleFolderName(): void
+    {
+        $this->assertTrue((new ThemeInfo('default', '/themes'))->hasValidName());
+        $this->assertTrue((new ThemeInfo('v2.0', '/themes'))->hasValidName());
+        $this->assertTrue((new ThemeInfo('0', '/themes'))->hasValidName());
+
+        $this->assertFalse((new ThemeInfo('', '/themes'))->hasValidName());
+        $this->assertFalse((new ThemeInfo('..', '/themes'))->hasValidName());
+        $this->assertFalse((new ThemeInfo('. .', '/themes'))->hasValidName());
+        $this->assertFalse((new ThemeInfo('../other', '/themes'))->hasValidName());
+        $this->assertFalse((new ThemeInfo('other\\theme', '/themes'))->hasValidName());
+    }
 }

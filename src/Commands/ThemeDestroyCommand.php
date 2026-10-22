@@ -28,6 +28,18 @@ class ThemeDestroyCommand extends BaseThemeCommand
      */
     public function handle(): int
     {
+        if (blank($this->argument('name'))) {
+            $this->error('Name is required.');
+
+            return self::FAILURE;
+        }
+
+        if (!$this->getTheme()->hasValidName()) {
+            $this->error('Name must be a single folder inside the themes path.');
+
+            return self::FAILURE;
+        }
+
         // The theme is not exists.
         $directoryDoesNotExists = !$this->directoryExists();
         if ($directoryDoesNotExists) {

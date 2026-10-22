@@ -256,14 +256,9 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
     private function validateValue($value): ?string
     {
         return match (true) {
-            empty($value) => 'Name is required.',
+            blank($value) => 'Name is required.',
 
-            !empty(
-                preg_match(
-                    '/[^a-zA-Z0-9\-_\s]/',
-                    $value,
-                )
-            ) => 'Name must be alphanumeric, dash, space or underscore.',
+            1 !== preg_match('/^[a-zA-Z0-9\-_\s]+$/', $value) => 'Name must be alphanumeric, dash, space or underscore.',
 
             default => null,
         };
