@@ -7,12 +7,19 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use FelixFrey\LaravelTheme\Facades\ThemeLoader;
 use FelixFrey\LaravelTheme\ThemeInfo;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class BaseThemeCommand.
  */
 abstract class BaseThemeCommand extends Command
 {
+    /**
+     * Theme info.
+     */
+    protected ThemeInfo $themeInfo;
+
     /**
      * Repository config.
      */
@@ -35,6 +42,17 @@ abstract class BaseThemeCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Artisan reuses one instance per command, so the theme cached by a
+     * previous run in the same process must not carry over to this one.
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        unset($this->themeInfo);
+
+        return parent::execute($input, $output);
+    }
+
     protected function directoryExists(): bool
     {
         return $this->files->isDirectory($this->getTheme()->getRootDirectoryPath());
@@ -55,7 +73,7 @@ abstract class BaseThemeCommand extends Command
      */
     protected function getTheme(): ThemeInfo
     {
-        return $this->makeTheme($this->argument('name'));
+        return $this->themeInfo ??= $this->makeTheme($this->argument('name'));
     }
 
     protected function makeTheme(string $name): ThemeInfo
