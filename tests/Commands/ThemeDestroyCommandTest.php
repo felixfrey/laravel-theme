@@ -35,11 +35,22 @@ class ThemeDestroyCommandTest extends TestCase
         $this->assertDirectoryDoesNotExist($this->assetsPath);
     }
 
-    public function testItKeepsTheThemeWhenDeletionIsNotConfirmed(): void
+    public function testItDeletesTheThemeWithoutConfirmationWhenForced(): void
+    {
+        $this->artisan('theme:destroy', ['name' => 'default', '--force' => true])
+            ->expectsOutput('Theme "default" has been destroyed.')
+            ->assertSuccessful();
+
+        $this->assertDirectoryDoesNotExist($this->themePath);
+        $this->assertDirectoryDoesNotExist($this->assetsPath);
+    }
+
+    public function testItKeepsTheThemeAndFailsWhenDeletionIsNotConfirmed(): void
     {
         $this->artisan('theme:destroy', ['name' => 'default'])
             ->expectsConfirmation('Are you sure you want to permanently delete?', 'no')
-            ->assertSuccessful();
+            ->expectsOutput('Deletion of Theme "default" has been canceled.')
+            ->assertFailed();
 
         $this->assertDirectoryExists($this->themePath);
         $this->assertDirectoryExists($this->assetsPath);

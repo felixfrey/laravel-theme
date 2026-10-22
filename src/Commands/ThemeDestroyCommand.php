@@ -3,6 +3,7 @@
 namespace FelixFrey\LaravelTheme\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class ThemeDestroyCommand.
@@ -48,13 +49,20 @@ class ThemeDestroyCommand extends BaseThemeCommand
             return self::FAILURE;
         }
 
-        if ($this->confirm('Are you sure you want to permanently delete?')) {
-            // Delete permanent.
-            $this->files->deleteDirectory($this->getTheme()->getRootDirectoryPath(), false);
-            $this->files->deleteDirectory($this->getAssetsPath(), false);
+        $deletionConfirmed = $this->option('force')
+            || $this->confirm('Are you sure you want to permanently delete?');
 
-            $this->info('Theme "' . $this->getTheme()->getName() . '" has been destroyed.');
+        if (!$deletionConfirmed) {
+            $this->error("Deletion of Theme \"{$this->getTheme()->getName()}\" has been canceled.");
+
+            return self::FAILURE;
         }
+
+        // Delete permanent.
+        $this->files->deleteDirectory($this->getTheme()->getRootDirectoryPath(), false);
+        $this->files->deleteDirectory($this->getAssetsPath(), false);
+
+        $this->info('Theme "' . $this->getTheme()->getName() . '" has been destroyed.');
 
         return self::SUCCESS;
     }
@@ -66,6 +74,13 @@ class ThemeDestroyCommand extends BaseThemeCommand
     {
         return [
             new InputArgument('name', InputArgument::REQUIRED, 'Name of the theme to destroy'),
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            new InputOption('force', null, InputOption::VALUE_NONE, 'Delete the theme without asking for confirmation'),
         ];
     }
 }

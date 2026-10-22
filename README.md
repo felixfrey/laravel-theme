@@ -155,6 +155,12 @@ To delete an existing theme, use the command:
 php artisan theme:destroy default
 ```
 
+The command asks for confirmation and exits with an error if you decline. To delete the theme without the question, for example in a script, add `--force`:
+
+```bash
+php artisan theme:destroy default --force
+```
+
 ### Structure
 
 Here is an example of the folder structure of project with theme
