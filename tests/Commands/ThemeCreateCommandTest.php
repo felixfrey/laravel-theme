@@ -58,6 +58,16 @@ class ThemeCreateCommandTest extends TestCase
         );
     }
 
+    public function testItRejectsAnUnknownAssetsType(): void
+    {
+        $this->artisan('theme:create', ['name' => 'default', 'assets' => 'webpack'])
+            ->expectsOutput('Assets type "webpack" is not supported. Use vite or mix.')
+            ->assertFailed();
+
+        $this->assertDirectoryDoesNotExist("{$this->basePath}/themes");
+        $this->assertFileDoesNotExist("{$this->basePath}/webpack.mix.js");
+    }
+
     public function testItReplacesTheThemeNamePlaceholderInStubs(): void
     {
         $this->artisan('theme:create', ['name' => 'default'])->assertSuccessful();
