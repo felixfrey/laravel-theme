@@ -29,6 +29,8 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
 
     protected array $containerFolder;
 
+    protected bool $overwriteExistingFiles = false;
+
     /**
      * Execute the console command.
      */
@@ -40,6 +42,8 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
 
             return self::FAILURE;
         }
+
+        $this->overwriteExistingFiles = $this->option('force');
 
         // Check if the theme is already exists.
         if (!$this->canGenerateTheme()) {
@@ -174,16 +178,17 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
 
         $this->error("Theme \"{$name}\" already exists.");
 
-        $forceOverride = $this->option('force')
-            || $this->confirm("Are you sure want to override \"{$name}\" theme folder?");
+        if (!$this->overwriteExistingFiles) {
+            $this->overwriteExistingFiles = $this->confirm("Are you sure want to override \"{$name}\" theme folder?");
+        }
 
-        if ($forceOverride) {
+        if ($this->overwriteExistingFiles) {
             $this->warn("Overriding Theme \"{$name}\".");
         } else {
             $this->error("Generation of Theme \"{$name}\" has been canceled.");
         }
 
-        return $forceOverride;
+        return $this->overwriteExistingFiles;
     }
 
     /**
@@ -214,7 +219,7 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
 
     protected function writeContent(string $filePath, string $content): void
     {
-        if (!$this->files->exists($filePath) || $this->option('force')) {
+        if (!$this->files->exists($filePath) || $this->overwriteExistingFiles) {
             $this->makeDir(pathinfo($filePath, PATHINFO_DIRNAME));
 
             $this->files->put($filePath, $content);
@@ -260,12 +265,21 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
                 )
             ) => 'Name must be alphanumeric, dash, space or underscore.',
 
-            $this->files->isDirectory(
-                $this->makeTheme($value)->getRootDirectoryPath()
-            ) => "Theme \"{$value}\" already exists.",
-
             default => null,
         };
+    }
+
+    private function validateThemeDoesNotExist(string $value): ?string
+    {
+        if ($this->option('force')) {
+            return null;
+        }
+
+        if (!$this->files->isDirectory($this->makeTheme($value)->getRootDirectoryPath())) {
+            return null;
+        }
+
+        return "Theme \"{$value}\" already exists.";
     }
 
     /**
@@ -286,7 +300,7 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
             'name' => fn () => text(
                 label: 'What is a name of the new theme?',
                 default: 'default',
-                validate: fn ($value) => $this->validateValue($value)
+                validate: fn ($value) => $this->validateValue($value) ?? $this->validateThemeDoesNotExist($value)
             ),
         ];
     }

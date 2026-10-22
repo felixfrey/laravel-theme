@@ -84,12 +84,50 @@ class ThemeCreateCommandTest extends TestCase
         $this->assertDirectoryDoesNotExist("{$this->basePath}/themes");
     }
 
-    public function testItRefusesToOverwriteAnExistingTheme(): void
+    public function testItRefusesToOverwriteAnExistingThemeWhenConfirmationIsDeclined(): void
     {
-        $this->artisan('theme:create', ['name' => 'default'])->assertSuccessful();
+        $configPath = $this->createModifiedDefaultTheme();
 
         $this->artisan('theme:create', ['name' => 'default'])
             ->expectsOutput('Theme "default" already exists.')
+            ->expectsConfirmation('Are you sure want to override "default" theme folder?', 'no')
+            ->expectsOutput('Generation of Theme "default" has been canceled.')
             ->assertFailed();
+
+        $this->assertStringEqualsFile($configPath, 'modified');
+    }
+
+    public function testItOverwritesAnExistingThemeWhenConfirmationIsAccepted(): void
+    {
+        $configPath = $this->createModifiedDefaultTheme();
+
+        $this->artisan('theme:create', ['name' => 'default'])
+            ->expectsConfirmation('Are you sure want to override "default" theme folder?', 'yes')
+            ->expectsOutput('Overriding Theme "default".')
+            ->assertSuccessful();
+
+        $this->assertStringContainsString("'name' => 'default'", file_get_contents($configPath));
+    }
+
+    public function testItOverwritesAnExistingThemeWithoutConfirmationWhenForced(): void
+    {
+        $configPath = $this->createModifiedDefaultTheme();
+
+        $this->artisan('theme:create', ['name' => 'default', '--force' => true])
+            ->expectsOutput('Overriding Theme "default".')
+            ->assertSuccessful();
+
+        $this->assertStringContainsString("'name' => 'default'", file_get_contents($configPath));
+    }
+
+    private function createModifiedDefaultTheme(): string
+    {
+        $this->artisan('theme:create', ['name' => 'default'])->assertSuccessful();
+
+        $configPath = "{$this->basePath}/themes/default/config.php";
+
+        file_put_contents($configPath, 'modified');
+
+        return $configPath;
     }
 }
