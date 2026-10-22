@@ -85,6 +85,15 @@ class ThemeCreateCommandTest extends TestCase
         $this->assertDirectoryExists("{$this->basePath}/themes/my_theme");
     }
 
+    public function testItUsesTheNameOfEachRunInTheSameProcess(): void
+    {
+        $this->artisan('theme:create', ['name' => 'first'])->assertSuccessful();
+        $this->artisan('theme:create', ['name' => 'second'])->assertSuccessful();
+
+        $this->assertDirectoryExists("{$this->basePath}/themes/first");
+        $this->assertDirectoryExists("{$this->basePath}/themes/second");
+    }
+
     public function testItRejectsNamesWithInvalidCharacters(): void
     {
         $this->artisan('theme:create', ['name' => 'my/theme'])
