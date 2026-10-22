@@ -67,4 +67,18 @@ jobs:
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --no-security-blocking
 
       - name: Run tests
-        run: vendor/bin/phpunit --testdox
+        run: vendor/bin/phpunit --testdox --testdox-text testdox.txt
+
+      - name: Add test results to the run summary
+        if: ${{ !cancelled() && hashFiles('testdox.txt') != '' }}
+        run: |
+          tests=$(grep -c '^ \[' testdox.txt || true)
+          {
+            echo "<details><summary>PHPUnit: ${tests} tests</summary>"
+            echo
+            echo '```'
+            cat testdox.txt
+            echo '```'
+            echo
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
