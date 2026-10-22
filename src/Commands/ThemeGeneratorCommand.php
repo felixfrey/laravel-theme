@@ -13,6 +13,8 @@ use function Laravel\Prompts\text;
  */
 class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissingInput
 {
+    private const ASSETS_TYPES = ['vite', 'mix'];
+
     /**
      * The console command name.
      *
@@ -39,6 +41,15 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
         $message = $this->validateValue($this->argument('name'));
         if ($message) {
             $this->error($message);
+
+            return self::FAILURE;
+        }
+
+        $assets = $this->argument('assets');
+        if (!in_array($assets, self::ASSETS_TYPES, true)) {
+            $supportedTypes = implode(' or ', self::ASSETS_TYPES);
+
+            $this->error("Assets type \"{$assets}\" is not supported. Use {$supportedTypes}.");
 
             return self::FAILURE;
         }
@@ -284,7 +295,7 @@ class ThemeGeneratorCommand extends BaseThemeCommand implements PromptsForMissin
     {
         return [
             new InputArgument('name', InputArgument::REQUIRED, 'A name of the new theme'),
-            new InputArgument('assets', InputArgument::OPTIONAL, 'A type of assets to install', 'vite', ['vite', 'mix']
+            new InputArgument('assets', InputArgument::OPTIONAL, 'A type of assets to install', 'vite', self::ASSETS_TYPES
             ),
         ];
     }
