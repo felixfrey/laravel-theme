@@ -56,10 +56,15 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
 
+      # Security blocking would skip every Laravel 10 and 11 release (and the
+      # lowest 12 and 13 releases), so the matrix would no longer test the
+      # versions composer.json claims to support. Stable only, so a blocked
+      # range fails instead of silently resolving to a dev branch.
       - name: Install dependencies
         run: |
+          composer config minimum-stability stable
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --no-security-blocking
 
       - name: Run tests
         run: vendor/bin/phpunit
