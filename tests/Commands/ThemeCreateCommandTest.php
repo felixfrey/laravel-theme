@@ -84,6 +84,22 @@ class ThemeCreateCommandTest extends TestCase
         $this->assertDirectoryDoesNotExist("{$this->basePath}/themes");
     }
 
+    public function testItRejectsANameThatOnlyContainsWhitespace(): void
+    {
+        $this->artisan('theme:create', ['name' => '   '])
+            ->expectsOutput('Name is required.')
+            ->assertFailed();
+
+        $this->assertDirectoryDoesNotExist("{$this->basePath}/themes");
+    }
+
+    public function testItAcceptsZeroAsAName(): void
+    {
+        $this->artisan('theme:create', ['name' => '0'])->assertSuccessful();
+
+        $this->assertDirectoryExists("{$this->basePath}/themes/0");
+    }
+
     public function testItRefusesToOverwriteAnExistingThemeWhenConfirmationIsDeclined(): void
     {
         $configPath = $this->createModifiedDefaultTheme();

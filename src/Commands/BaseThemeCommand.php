@@ -45,6 +45,22 @@ abstract class BaseThemeCommand extends Command
         return $this->files->isDirectory($this->getTheme()->getRootDirectoryPath());
     }
 
+    protected function validateName(?string $name): ?string
+    {
+        return match (true) {
+            blank($name) => 'Name is required.',
+
+            !empty(
+                preg_match(
+                    '/[^a-zA-Z0-9\-_\s]/',
+                    $name,
+                )
+            ) => 'Name must be alphanumeric, dash, space or underscore.',
+
+            default => null,
+        };
+    }
+
     /**
      * Get assets writable path.
      */

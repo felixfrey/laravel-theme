@@ -53,4 +53,24 @@ class ThemeDestroyCommandTest extends TestCase
 
         $this->assertDirectoryExists($this->themePath);
     }
+
+    public function testItRefusesAnEmptyNameInsteadOfDeletingAllThemes(): void
+    {
+        $this->artisan('theme:destroy', ['name' => ''])
+            ->expectsOutput('Name is required.')
+            ->assertFailed();
+
+        $this->assertDirectoryExists($this->themePath);
+        $this->assertDirectoryExists($this->assetsPath);
+    }
+
+    public function testItRefusesANameThatPointsOutsideTheThemesDirectory(): void
+    {
+        $this->artisan('theme:destroy', ['name' => '..'])
+            ->expectsOutput('Name must be alphanumeric, dash, space or underscore.')
+            ->assertFailed();
+
+        $this->assertDirectoryExists($this->themePath);
+        $this->assertDirectoryExists($this->assetsPath);
+    }
 }
