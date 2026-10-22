@@ -155,6 +155,49 @@ class ThemeCreateCommandTest extends TestCase
         $this->assertStringContainsString("'name' => 'default'", file_get_contents($configPath));
     }
 
+    public function testItPromptsForAMissingName(): void
+    {
+        $this->artisan('theme:create')
+            ->expectsQuestion('What is a name of the new theme?', 'prompted')
+            ->assertSuccessful();
+
+        $this->assertDirectoryExists("{$this->basePath}/themes/prompted");
+    }
+
+    public function testThePromptRejectsInvalidCharacters(): void
+    {
+        $this->artisan('theme:create')
+            ->expectsQuestion('What is a name of the new theme?', 'my/theme')
+            ->expectsOutputToContain('Name must be alphanumeric, dash, space or underscore.')
+            ->assertFailed();
+
+        $this->assertDirectoryDoesNotExist("{$this->basePath}/themes");
+    }
+
+    public function testThePromptRejectsAnExistingTheme(): void
+    {
+        $configPath = $this->createModifiedDefaultTheme();
+
+        $this->artisan('theme:create')
+            ->expectsQuestion('What is a name of the new theme?', 'default')
+            ->expectsOutputToContain('Theme "default" already exists.')
+            ->assertFailed();
+
+        $this->assertStringEqualsFile($configPath, 'modified');
+    }
+
+    public function testThePromptAcceptsAnExistingThemeWhenForced(): void
+    {
+        $configPath = $this->createModifiedDefaultTheme();
+
+        $this->artisan('theme:create', ['--force' => true])
+            ->expectsQuestion('What is a name of the new theme?', 'default')
+            ->expectsOutput('Overriding Theme "default".')
+            ->assertSuccessful();
+
+        $this->assertStringContainsString("'name' => 'default'", file_get_contents($configPath));
+    }
+
     private function createModifiedDefaultTheme(): string
     {
         $this->artisan('theme:create', ['name' => 'default'])->assertSuccessful();

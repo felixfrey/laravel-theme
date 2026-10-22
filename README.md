@@ -12,13 +12,13 @@ For example, you can develop **multiple** themes for your application and easily
 
 ## Requirements
 
-This version requires [PHP](https://www.php.net/) 8.1 and supports [Laravel](https://laravel.com/) 10 - 13.
+This version requires [PHP](https://www.php.net/) 8.1 and supports [Laravel](https://laravel.com/) 10.39 and newer, up to Laravel 13.
 
 This package also provides support for [Laravel Mix](https://laravel-mix.com/) and [Vite](https://vitejs.dev/) configurations.
 
-| Package Version | Laravel 10         | Laravel 11         | Laravel 12         | Laravel 13         |
-|-----------------|--------------------|--------------------|--------------------|--------------------|
-| 1               | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Package Version | Laravel 10                 | Laravel 11         | Laravel 12         | Laravel 13         |
+|-----------------|----------------------------|--------------------|--------------------|--------------------|
+| 1               | :white_check_mark: (10.39+) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 ## Installation
 
