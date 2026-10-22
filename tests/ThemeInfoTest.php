@@ -19,6 +19,12 @@ class ThemeInfoTest extends TestCase
         $theme = new ThemeInfo('default', '/themes');
 
         $this->assertSame('/themes/default/views/layouts', $theme->pathForItem(['views', 'layouts']));
+    }
+
+    public function testConfigPathPointsToTheConfigFileInTheThemeRoot(): void
+    {
+        $theme = new ThemeInfo('default', '/themes');
+
         $this->assertSame('/themes/default/config.php', $theme->getConfigPath());
     }
 
