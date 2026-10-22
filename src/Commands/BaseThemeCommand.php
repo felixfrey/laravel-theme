@@ -48,7 +48,7 @@ abstract class BaseThemeCommand extends Command
     /**
      * Get assets writable path.
      */
-    protected function getAssetsPath(string $pathInTheme = null): string
+    protected function getAssetsPath(?string $pathInTheme = null): string
     {
         $rootPath = $this->config->get('theme.assets_path', 'themes');
 
