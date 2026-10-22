@@ -36,13 +36,17 @@ class ThemeDestroyCommand extends BaseThemeCommand
             return self::FAILURE;
         }
 
-        if ($this->confirm('Are you sure you want to permanently delete?')) {
-            // Delete permanent.
-            $this->files->deleteDirectory($this->getTheme()->getRootDirectoryPath(), false);
-            $this->files->deleteDirectory($this->getAssetsPath(), false);
+        if (!$this->confirm('Are you sure you want to permanently delete?')) {
+            $this->error("Deletion of Theme \"{$this->getTheme()->getName()}\" has been canceled.");
 
-            $this->info('Theme "' . $this->getTheme()->getName() . '" has been destroyed.');
+            return self::FAILURE;
         }
+
+        // Delete permanent.
+        $this->files->deleteDirectory($this->getTheme()->getRootDirectoryPath(), false);
+        $this->files->deleteDirectory($this->getAssetsPath(), false);
+
+        $this->info('Theme "' . $this->getTheme()->getName() . '" has been destroyed.');
 
         return self::SUCCESS;
     }
