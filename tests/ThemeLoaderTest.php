@@ -83,6 +83,24 @@ class ThemeLoaderTest extends TestCase
         ThemeLoader::init('first');
     }
 
+    public function testInitLeavesTheViewPathsUntouchedWhenTheChainIsInvalid(): void
+    {
+        $this->useTemporaryBasePath();
+
+        $this->createTheme('first', parent: 'second');
+        $this->createTheme('second', parent: 'missing');
+
+        $viewPathsBefore = view()->getFinder()->getPaths();
+
+        try {
+            ThemeLoader::init('first');
+
+            $this->fail('Expected a ThemeException for the missing parent theme.');
+        } catch (ThemeException) {
+            $this->assertSame($viewPathsBefore, view()->getFinder()->getPaths());
+        }
+    }
+
     public function testGetListOnlyReturnsDirectoriesWithAThemeConfig(): void
     {
         $themeNames = array_map(
