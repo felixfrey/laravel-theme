@@ -14,11 +14,6 @@ use FelixFrey\LaravelTheme\ThemeInfo;
 abstract class BaseThemeCommand extends Command
 {
     /**
-     * Theme info.
-     */
-    protected ThemeInfo $themeInfo;
-
-    /**
      * Repository config.
      */
     protected Repository $config;
@@ -60,7 +55,7 @@ abstract class BaseThemeCommand extends Command
      */
     protected function getTheme(): ThemeInfo
     {
-        return $this->themeInfo ??= $this->makeTheme($this->argument('name'));
+        return $this->makeTheme($this->argument('name'));
     }
 
     protected function makeTheme(string $name): ThemeInfo
