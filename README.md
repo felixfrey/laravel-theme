@@ -347,6 +347,11 @@ You can use `@extends` directive to specify a parent layout.
 
 You still able to use default `View::make('emails.notify')` which is stored outside the `themes` directory.
 
+## Testing
+
+```bash
+composer test
+```
 
 ## License
 
