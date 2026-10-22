@@ -61,7 +61,15 @@ class ThemeLoader
 
         $currentTheme = $baseTheme;
 
+        $themes = [];
+
         while (true) {
+            if (isset($themes[$currentTheme->getName()])) {
+                $inheritanceChain = implode(' -> ', [...array_keys($themes), $currentTheme->getName()]);
+
+                throw new ThemeException("Circular theme inheritance: {$inheritanceChain}.");
+            }
+
             if (!is_dir($currentTheme->getRootDirectoryPath())) {
                 throw new ThemeException("Theme folder {$currentTheme->getName()} not found.");
             }
@@ -69,14 +77,7 @@ class ThemeLoader
             // init config
             $currentTheme->readConfig();
 
-            // add theme's root folder
-            // root needed for layouts => /layouts/master (layouts.master)
-            $this->viewFinder->addLocation($currentTheme->getRootDirectoryPath());
-
-            // add folder with views
-            // root for other views
-            $views = config('theme.containerDir.view', 'views');
-            $this->viewFinder->addLocation($currentTheme->pathForItem($views));
+            $themes[$currentTheme->getName()] = $currentTheme;
 
             // Check inheritance theme
             $inheritThemeName = $currentTheme->getParentThemeName();
@@ -89,6 +90,19 @@ class ThemeLoader
             // if theme has parent, add it to the list
             // and load on next loop iteration
             $currentTheme = $this->makeTheme($inheritThemeName);
+        }
+
+        // Only touch the view finder once the whole chain resolved, so an
+        // invalid chain leaves the previously registered view paths intact.
+        foreach ($themes as $theme) {
+            // add theme's root folder
+            // root needed for layouts => /layouts/master (layouts.master)
+            $this->viewFinder->addLocation($theme->getRootDirectoryPath());
+
+            // add folder with views
+            // root for other views
+            $views = config('theme.containerDir.view', 'views');
+            $this->viewFinder->addLocation($theme->pathForItem($views));
         }
 
         // Register lang files for base theme with namespace

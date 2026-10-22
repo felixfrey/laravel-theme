@@ -91,6 +91,49 @@ class ThemeLoaderTest extends TestCase
         ThemeLoader::init('missing');
     }
 
+    public function testInitThrowsForAMissingParentTheme(): void
+    {
+        $this->useTemporaryBasePath();
+
+        $this->createTheme('orphan', parent: 'missing');
+
+        $this->expectException(ThemeException::class);
+        $this->expectExceptionMessage('Theme folder missing not found.');
+
+        ThemeLoader::init('orphan');
+    }
+
+    public function testInitThrowsForCircularInheritance(): void
+    {
+        $this->useTemporaryBasePath();
+
+        $this->createTheme('first', parent: 'second');
+        $this->createTheme('second', parent: 'first');
+
+        $this->expectException(ThemeException::class);
+        $this->expectExceptionMessage('Circular theme inheritance: first -> second -> first.');
+
+        ThemeLoader::init('first');
+    }
+
+    public function testInitLeavesTheViewPathsUntouchedWhenTheChainIsInvalid(): void
+    {
+        $this->useTemporaryBasePath();
+
+        $this->createTheme('first', parent: 'second');
+        $this->createTheme('second', parent: 'missing');
+
+        $viewPathsBefore = view()->getFinder()->getPaths();
+
+        try {
+            ThemeLoader::init('first');
+
+            $this->fail('Expected a ThemeException for the missing parent theme.');
+        } catch (ThemeException) {
+            $this->assertSame($viewPathsBefore, view()->getFinder()->getPaths());
+        }
+    }
+
     public function testGetListOnlyReturnsDirectoriesWithAThemeConfig(): void
     {
         $themeNames = array_map(
@@ -124,5 +167,13 @@ class ThemeLoaderTest extends TestCase
         config()->set('theme.path', $this->fixturesPath('missing'));
 
         $this->assertSame([], ThemeLoader::getList());
+    }
+
+    private function createTheme(string $name, string $parent): void
+    {
+        $themePath = ThemeLoader::themesPath() . "/{$name}";
+
+        File::ensureDirectoryExists($themePath);
+        File::put("{$themePath}/config.php", "<?php return ['inherit' => '{$parent}'];");
     }
 }
